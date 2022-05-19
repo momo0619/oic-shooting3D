@@ -10,10 +10,12 @@
 //INCLUDE
 #include	"GameApp.h"
 #include	"Player.h"
+#include	"Stage.h"
 
 CCamera	gCamera;
 CDirectionalLight gLight;
 CPlayer	gPlayer;
+CStage gStage;
 bool gbDebug = false;
 
 /*************************************************************************//*!
@@ -39,8 +41,10 @@ MofBool CGameApp::Initialize(void){
 	CGraphicsUtilities::SetDirectionalLight(&gLight);
 
 	gPlayer.Load();
+	gStage.Load();
 
 	gPlayer.Initialize();
+	gStage.Initialize();
 	return TRUE;
 }
 /*************************************************************************//*!
@@ -53,6 +57,7 @@ MofBool CGameApp::Initialize(void){
 MofBool CGameApp::Update(void){
 	//キーの更新
 	g_pInput->RefreshKey();
+	gStage.Update();
 	gPlayer.Update();
 	if (g_pInput->IsKeyPush(MOFKEY_F1))
 	{
@@ -65,6 +70,7 @@ MofBool CGameApp::Update(void){
 	CVector3 vup = CVector3(0, 1, 0);
 	cpos.x = posX;
 	tpos.x = posX;
+	vup.RotationZ(gPlayer.GetPosition().x / FIELD_HALF_X * MOF_ToRadian(10.0f));
 	gCamera.LookAt(cpos, tpos, vup);
 	gCamera.Update();
 	return TRUE;
@@ -84,6 +90,8 @@ MofBool CGameApp::Render(void){
 	g_pGraphics->ClearTarget(0.65f,0.65f,0.67f,0.0f,1.0f,0);
 	g_pGraphics->SetDepthEnable(TRUE);
 
+	gStage.Render();
+
 	gPlayer.Render();
 
 	if (gbDebug)
@@ -99,6 +107,7 @@ MofBool CGameApp::Render(void){
 	{
 		gPlayer.RenderDebugText();
 	}
+	gStage.RenderDebugText();
 
 	// 描画の終了
 	g_pGraphics->RenderEnd();
@@ -113,5 +122,6 @@ MofBool CGameApp::Render(void){
 *//**************************************************************************/
 MofBool CGameApp::Release(void){
 	gPlayer.Release();
+	gStage.Render();
 	return TRUE;
 }
