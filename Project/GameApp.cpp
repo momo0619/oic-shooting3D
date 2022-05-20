@@ -122,6 +122,6 @@ MofBool CGameApp::Render(void){
 *//**************************************************************************/
 MofBool CGameApp::Release(void){
 	gPlayer.Release();
-	gStage.Render();
+	gStage.Release();
 	return TRUE;
 }
