@@ -58,39 +58,50 @@ void CPlayer::Update(void){
 	//‰ñ“]•ûŒü
 	float Roll = 0;
 	float m_Speed = PLAYER_SPEED;
+	float m_RotSpeed = MOF_ToRadian(10);		//‰ñ“]‘‚­‚·‚éi“r’†j
+
+
+	//ƒL[ƒ{[ƒh‚Å‚ÌˆÚ“®
 	if (g_pInput->IsKeyHold(MOFKEY_LSHIFT))
 	{
-		m_Speed * 5;
+		m_Speed += 0.3f;
+		m_RotSpeed += 0.3f;
+
 	}
+
 	if (g_pInput->IsKeyHold(MOFKEY_LEFT))
 	{
-		m_Pos.x = max(m_Pos.x - PLAYER_SPEED, -FIELD_HALF_X);
+		m_Pos.x = max(m_Pos.x - m_Speed, -FIELD_HALF_X);
 		Roll -= MOF_MATH_PI;
+		//m_RotZ += m_RotSpeed;
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_RIGHT))
 	{
-		m_Pos.x = min(m_Pos.x + PLAYER_SPEED, FIELD_HALF_X);
-		Roll += MOF_MATH_PI;
+		m_Pos.x = min(m_Pos.x + m_Speed, FIELD_HALF_X);
+		Roll -= MOF_MATH_PI;
+		//m_RotZ += m_RotSpeed;
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_UP))
 	{
-		m_Pos.z = min(m_Pos.z + PLAYER_SPEED, FIELD_HALF_Z);
+
+		m_Pos.z = min(m_Pos.z + m_Speed, FIELD_HALF_Z);
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_DOWN))
 	{
-		m_Pos.z = max(m_Pos.z - PLAYER_SPEED, -FIELD_HALF_Z);
+		m_Pos.z = max(m_Pos.z - m_Speed, -FIELD_HALF_Z);
 	}
+
 	//‰ñ“]
 	float RotSpeed = MOF_ToRadian(10);
 	if (Roll == 0)
 	{
 		RotSpeed = min(abs(m_RotZ) * 0.1f, RotSpeed);
-		if (abs(m_RotZ) <= RotSpeed || signbit(m_RotZ) != signbit(Roll))
-		{
-			m_RotZ += Roll;
-		}
-		m_RotZ -= copysignf(min(RotSpeed, abs(m_RotZ)), m_RotZ);
 	}
+	if (abs(m_RotZ) <= RotSpeed || signbit(m_RotZ) != signbit(Roll))
+	{
+		m_RotZ += Roll;
+	}
+	m_RotZ -= copysignf(min(RotSpeed, abs(m_RotZ)), m_RotZ);
 
 	if (m_ShotWait <= 0)
 	{
