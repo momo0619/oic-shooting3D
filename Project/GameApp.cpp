@@ -11,6 +11,7 @@
 #include	"GameApp.h"
 #include	"Player.h"
 #include	"Stage.h"
+#include "Stage1.h"
 
 CCamera				gCamera;
 CVector3			gCameraPosition;
@@ -20,6 +21,10 @@ float				gRotUp;
 
 CDirectionalLight	gLight;
 CPlayer				gPlayer;
+
+#define   ENEMY_COUNT  (20)
+CEnemy    gEnemyArray[ENEMY_COUNT];
+
 CStage				gStage;
 
 bool				gbDebug = false;
@@ -63,7 +68,13 @@ MofBool CGameApp::Initialize(void){
 	gStage.Load();
 
 	gPlayer.Initialize();
-	gStage.Initialize();
+	gStage.Initialize(&gStg1EnemyStart);
+	{
+		for (int i = 0; i < ENEMY_COUNT; i++)
+		{
+			gEnemyArray[i].Initialize();
+		}
+	}
 
 	return TRUE;
 }
@@ -79,7 +90,12 @@ MofBool CGameApp::Update(void){
 	//キーの更新
 	g_pInput->RefreshKey();
 	gPlayer.Update();
-	gStage.Update();
+	gStage.Update(gEnemyArray,ENEMY_COUNT);
+
+	for (int i = 0; i < ENEMY_COUNT; i++)
+	{
+		gEnemyArray[i].Update();
+	}
 
 	if (g_pInput->IsKeyPush(MOFKEY_F1)) {
 		gbDebug = ((gbDebug) ? false : true);
@@ -126,6 +142,11 @@ MofBool CGameApp::Render(void){
 
 	gPlayer.Render();
 	
+	for (int i = 0; i < ENEMY_COUNT; i++)
+	{
+		gEnemyArray[i].Render();
+	}
+
 
 	if (gbDebug) {
 		CMatrix44 matworld;
@@ -135,6 +156,10 @@ MofBool CGameApp::Render(void){
 	g_pGraphics->SetDepthEnable(false);
 
 	if (gbDebug) {
+		for (int i = 0; i < ENEMY_COUNT; i++)
+		{
+			gEnemyArray[i].RenderDebugText(i);
+		}
 //		CGraphicsUtilities::RenderString(10, 40, MOF_XRGB(0, 0, 0),"%f , rot : %f / dest : %f",v,rot, dest);
 
 //gPlayer.RenderDebugText();
